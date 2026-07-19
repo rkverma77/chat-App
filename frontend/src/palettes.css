@@ -1,0 +1,153 @@
+/* ============================================
+   PALETTES
+   ============================================ */
+
+/* ---------- Emerald (Default) ---------- */
+/* Dark Mode */
+:root.dark[data-palette="emerald"] {
+  --accent-primary: #00D084;
+  --accent-secondary: #00B96B;
+  --accent-tertiary: #00A65F;
+  --accent-glow: rgba(0, 208, 132, 0.15);
+  --accent-glow-strong: rgba(0, 208, 132, 0.35);
+  --border-active: rgba(0, 208, 132, 0.4);
+  --success: #00D084;
+  --success-glow: rgba(0, 208, 132, 0.2);
+  --sent-bubble: linear-gradient(135deg, #00D084 0%, #00B96B 100%);
+  --shadow-glow: 0 0 20px rgba(0, 208, 132, 0.15);
+  --shadow-glow-strong: 0 0 40px rgba(0, 208, 132, 0.25);
+}
+/* Light Mode */
+:root.light[data-palette="emerald"] {
+  --accent-primary: #059669;
+  --accent-secondary: #10b981;
+  --accent-tertiary: #34d399;
+  --accent-glow: rgba(5, 150, 105, 0.08);
+  --accent-glow-strong: rgba(5, 150, 105, 0.15);
+  --border-active: rgba(5, 150, 105, 0.4);
+  --success: #059669;
+  --success-glow: rgba(5, 150, 105, 0.15);
+  --sent-bubble: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  --shadow-glow: 0 0 20px rgba(5, 150, 105, 0.08);
+  --shadow-glow-strong: 0 0 40px rgba(5, 150, 105, 0.12);
+}
+
+/* ---------- Blue ---------- */
+/* Dark Mode */
+:root.dark[data-palette="blue"] {
+  --accent-primary: #3b82f6;
+  --accent-secondary: #2563eb;
+  --accent-tertiary: #1d4ed8;
+  --accent-glow: rgba(59, 130, 246, 0.15);
+  --accent-glow-strong: rgba(59, 130, 246, 0.35);
+  --border-active: rgba(59, 130, 246, 0.4);
+  --success: #3b82f6;
+  --success-glow: rgba(59, 130, 246, 0.2);
+  --sent-bubble: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.15);
+  --shadow-glow-strong: 0 0 40px rgba(59, 130, 246, 0.25);
+}
+/* Light Mode */
+:root.light[data-palette="blue"] {
+  --accent-primary: #2563eb;
+  --accent-secondary: #3b82f6;
+  --accent-tertiary: #60a5fa;
+  --accent-glow: rgba(37, 99, 235, 0.08);
+  --accent-glow-strong: rgba(37, 99, 235, 0.15);
+  --border-active: rgba(37, 99, 235, 0.4);
+  --success: #2563eb;
+  --success-glow: rgba(37, 99, 235, 0.15);
+  --sent-bubble: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  --shadow-glow: 0 0 20px rgba(37, 99, 235, 0.08);
+  --shadow-glow-strong: 0 0 40px rgba(37, 99, 235, 0.12);
+}
+
+/* ---------- Rose ---------- */
+/* Dark Mode */
+:root.dark[data-palette="rose"] {
+  --accent-primary: #f43f5e;
+  --accent-secondary: #e11d48;
+  --accent-tertiary: #be123c;
+  --accent-glow: rgba(244, 63, 94, 0.15);
+  --accent-glow-strong: rgba(244, 63, 94, 0.35);
+  --border-active: rgba(244, 63, 94, 0.4);
+  --success: #f43f5e;
+  --success-glow: rgba(244, 63, 94, 0.2);
+  --sent-bubble: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  --shadow-glow: 0 0 20px rgba(244, 63, 94, 0.15);
+  --shadow-glow-strong: 0 0 40px rgba(244, 63, 94, 0.25);
+}
+/* Light Mode */
+:root.light[data-palette="rose"] {
+  --accent-primary: #e11d48;
+  --accent-secondary: #f43f5e;
+  --accent-tertiary: #fb7185;
+  --accent-glow: rgba(225, 29, 72, 0.08);
+  --accent-glow-strong: rgba(225, 29, 72, 0.15);
+  --border-active: rgba(225, 29, 72, 0.4);
+  --success: #e11d48;
+  --success-glow: rgba(225, 29, 72, 0.15);
+  --sent-bubble: linear-gradient(135deg, #e11d48 0%, #f43f5e 100%);
+  --shadow-glow: 0 0 20px rgba(225, 29, 72, 0.08);
+  --shadow-glow-strong: 0 0 40px rgba(225, 29, 72, 0.12);
+}
+
+/* ---------- Violet ---------- */
+/* Dark Mode */
+:root.dark[data-palette="violet"] {
+  --accent-primary: #8b5cf6;
+  --accent-secondary: #7c3aed;
+  --accent-tertiary: #6d28d9;
+  --accent-glow: rgba(139, 92, 246, 0.15);
+  --accent-glow-strong: rgba(139, 92, 246, 0.35);
+  --border-active: rgba(139, 92, 246, 0.4);
+  --success: #8b5cf6;
+  --success-glow: rgba(139, 92, 246, 0.2);
+  --sent-bubble: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  --shadow-glow: 0 0 20px rgba(139, 92, 246, 0.15);
+  --shadow-glow-strong: 0 0 40px rgba(139, 92, 246, 0.25);
+}
+/* Light Mode */
+:root.light[data-palette="violet"] {
+  --accent-primary: #7c3aed;
+  --accent-secondary: #8b5cf6;
+  --accent-tertiary: #a78bfa;
+  --accent-glow: rgba(124, 58, 237, 0.08);
+  --accent-glow-strong: rgba(124, 58, 237, 0.15);
+  --border-active: rgba(124, 58, 237, 0.4);
+  --success: #7c3aed;
+  --success-glow: rgba(124, 58, 237, 0.15);
+  --sent-bubble: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
+  --shadow-glow: 0 0 20px rgba(124, 58, 237, 0.08);
+  --shadow-glow-strong: 0 0 40px rgba(124, 58, 237, 0.12);
+}
+
+/* ---------- Amber ---------- */
+/* Dark Mode */
+:root.dark[data-palette="amber"] {
+  --accent-primary: #f59e0b;
+  --accent-secondary: #d97706;
+  --accent-tertiary: #b45309;
+  --accent-glow: rgba(245, 158, 11, 0.15);
+  --accent-glow-strong: rgba(245, 158, 11, 0.35);
+  --border-active: rgba(245, 158, 11, 0.4);
+  --success: #f59e0b;
+  --success-glow: rgba(245, 158, 11, 0.2);
+  --sent-bubble: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  --shadow-glow: 0 0 20px rgba(245, 158, 11, 0.15);
+  --shadow-glow-strong: 0 0 40px rgba(245, 158, 11, 0.25);
+}
+/* Light Mode */
+:root.light[data-palette="amber"] {
+  --accent-primary: #d97706;
+  --accent-secondary: #f59e0b;
+  --accent-tertiary: #fbbf24;
+  --accent-glow: rgba(217, 119, 6, 0.08);
+  --accent-glow-strong: rgba(217, 119, 6, 0.15);
+  --border-active: rgba(217, 119, 6, 0.4);
+  --success: #d97706;
+  --success-glow: rgba(217, 119, 6, 0.15);
+  --sent-bubble: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+  --shadow-glow: 0 0 20px rgba(217, 119, 6, 0.08);
+  --shadow-glow-strong: 0 0 40px rgba(217, 119, 6, 0.12);
+}

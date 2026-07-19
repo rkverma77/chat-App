@@ -1,24 +1,70 @@
 import { useChatStore } from "../store/useChatStore";
-
+import { useAuthStore } from "../store/useAuthStore";
 import Sidebar from "../components/Sidebar";
 import NoChatSelected from "../components/NoChatSelected";
 import ChatContainer from "../components/ChatContainer";
+import { motion } from "framer-motion";
+
+import { useEffect } from "react";
 
 const HomePage = () => {
-  const { selectedUser } = useChatStore();
+  const { selectedUser, subscribeToTyping, unsubscribeFromTyping, subscribeToMessages, unsubscribeFromMessages } = useChatStore();
+  const { socket } = useAuthStore();
+
+  useEffect(() => {
+    if (socket) {
+      subscribeToTyping();
+      subscribeToMessages();
+    }
+    
+    return () => {
+      unsubscribeFromTyping();
+      unsubscribeFromMessages();
+    };
+  }, [socket, subscribeToTyping, unsubscribeFromTyping, subscribeToMessages, unsubscribeFromMessages]);
 
   return (
-    <div className="h-screen bg-base-200">
-      <div className="flex items-center justify-center pt-20 px-4">
-        <div className="bg-base-100 rounded-lg shadow-cl w-full max-w-6xl h-[calc(100vh-8rem)]">
-          <div className="flex h-full rounded-lg overflow-hidden">
-            <Sidebar />
+    <div className="h-screen w-full relative overflow-hidden" style={{ background: "transparent" }}>
 
+
+      <div className="flex items-center justify-center relative z-10" style={{ height: "100%", paddingTop: "100px", paddingBottom: "32px", paddingLeft: "16px", paddingRight: "16px" }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="w-full max-w-7xl flex gap-4 h-full"
+        >
+          {/* Left Box: Sidebar */}
+          <div 
+            className="h-full rounded-[24px] overflow-hidden flex-shrink-0 flex"
+            style={{ 
+              background: "var(--bg-secondary)", 
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              border: "1px solid var(--border-color)",
+              boxShadow: "var(--shadow-lg)"
+            }}
+          >
+            <Sidebar />
+          </div>
+
+          {/* Right Box: Chat Area */}
+          <div 
+            className="h-full flex-1 rounded-[24px] overflow-hidden flex"
+            style={{ 
+              background: "var(--bg-secondary)", 
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              border: "1px solid var(--border-color)",
+              boxShadow: "var(--shadow-lg)"
+            }}
+          >
             {!selectedUser ? <NoChatSelected /> : <ChatContainer />}
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
 };
+
 export default HomePage;

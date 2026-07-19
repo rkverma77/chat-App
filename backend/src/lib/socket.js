@@ -33,6 +33,37 @@ io.on("connection", (socket) => {
   // io.emit() is used to send events to all the connected clients
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
+  socket.on("typing", ({ receiverId }) => {
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("userTyping", { senderId: userId });
+    }
+  });
+
+  socket.on("stopTyping", ({ receiverId }) => {
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("userStopTyping", { senderId: userId });
+    }
+  });
+
+  socket.on("markMessagesAsRead", async ({ senderId }) => {
+    try {
+      const Message = (await import("../models/message.model.js")).default;
+      await Message.updateMany(
+        { senderId, receiverId: userId, isRead: { $ne: true } },
+        { $set: { isRead: true } }
+      );
+      
+      const senderSocketId = getReceiverSocketId(senderId);
+      if (senderSocketId) {
+        io.to(senderSocketId).emit("messagesRead", { receiverId: userId });
+      }
+    } catch (error) {
+      console.error("Error marking messages as read:", error);
+    }
+  });
+
   socket.on("disconnect", () => {
     console.log("A user disconnected", socket.id);
     delete userSocketMap[userId];
