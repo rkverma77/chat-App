@@ -60,9 +60,40 @@ export const useChatStore = create((set, get) => ({
     const { selectedUser } = get();
     try {
       const res = await axiosInstance.post(`/messages/send/${selectedUser._id}`, messageData);
-      set((state) => ({ messages: [...state.messages, res.data] }));
+      set((state) => {
+        const isUserInList = state.users.some(u => u._id === selectedUser._id);
+        return {
+          messages: [...state.messages, res.data],
+          users: isUserInList ? state.users : [...state.users, selectedUser]
+        };
+      });
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to send message");
+    }
+  },
+
+  deleteMessage: async (messageId) => {
+    try {
+      await axiosInstance.delete(`/messages/${messageId}`);
+      set((state) => ({
+        messages: state.messages.filter((msg) => msg._id !== messageId),
+      }));
+      toast.success("Message deleted");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete message");
+    }
+  },
+
+  reactToMessage: async (messageId, emoji) => {
+    try {
+      const res = await axiosInstance.post(`/messages/${messageId}/react`, { emoji });
+      set((state) => ({
+        messages: state.messages.map((msg) =>
+          msg._id === messageId ? { ...msg, reactions: res.data.reactions } : msg
+        ),
+      }));
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to react to message");
     }
   },
 
@@ -79,13 +110,23 @@ export const useChatStore = create((set, get) => ({
       
       if (!isMessageSentFromSelectedUser) {
         // Update unread count in sidebar if chat is not open
-        set((state) => ({
-          users: state.users.map((user) => 
-            user._id === newMessage.senderId 
-              ? { ...user, unreadCount: (user.unreadCount || 0) + 1 }
-              : user
-          )
-        }));
+        set((state) => {
+          const userExists = state.users.some(u => u._id === newMessage.senderId);
+          
+          // If a completely new person messages us, refresh the contacts list to fetch their profile & unread count
+          if (!userExists) {
+            get().getUsers();
+            return state;
+          }
+
+          return {
+            users: state.users.map((user) => 
+              user._id === newMessage.senderId 
+                ? { ...user, unreadCount: (user.unreadCount || 0) + 1 }
+                : user
+            )
+          };
+        });
         return;
       }
 
@@ -109,6 +150,20 @@ export const useChatStore = create((set, get) => ({
         }));
       }
     });
+
+    socket.on("messageDeleted", ({ messageId }) => {
+      set((state) => ({
+        messages: state.messages.filter((msg) => msg._id !== messageId),
+      }));
+    });
+
+    socket.on("messageReaction", ({ messageId, reactions }) => {
+      set((state) => ({
+        messages: state.messages.map((msg) =>
+          msg._id === messageId ? { ...msg, reactions } : msg
+        ),
+      }));
+    });
   },
 
   unsubscribeFromMessages: () => {
@@ -116,6 +171,8 @@ export const useChatStore = create((set, get) => ({
     if (socket) {
       socket.off("newMessage");
       socket.off("messagesRead");
+      socket.off("messageDeleted");
+      socket.off("messageReaction");
     }
   },
 

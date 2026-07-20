@@ -13,8 +13,15 @@ const MessageInput = () => {
   const fileInputRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const emojiPickerRef = useRef(null);
+  const inputRef = useRef(null);
   const { sendMessage, selectedUser } = useChatStore();
   const { socket } = useAuthStore();
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [selectedUser?._id]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -136,6 +143,7 @@ const MessageInput = () => {
         <div className="flex-1 flex gap-2">
           <div className="relative w-full">
             <input
+              ref={inputRef}
               type="text"
               className="w-full rounded-full focus:outline-none transition-all duration-250"
               style={{
@@ -164,7 +172,7 @@ const MessageInput = () => {
               <button
                 type="button"
                 onClick={() => setShowEmojiPicker((prev) => !prev)}
-                className="transition-colors hover:text-[var(--accent-primary)]"
+                className="transition-colors hover:text-[var(--accent-primary)] cursor-pointer"
                 style={{ color: showEmojiPicker ? "var(--accent-primary)" : "var(--text-secondary)" }}
               >
                 <Smile size={20} />

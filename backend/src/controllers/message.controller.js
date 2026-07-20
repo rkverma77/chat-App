@@ -8,39 +8,19 @@ export const getUsersForSidebar = async (req, res) => {
   try {
     const loggedInUserId = req.user._id;
 
-    // Find all messages where the current user is involved
-    const messages = await Message.find({
-      $or: [
-        { senderId: loggedInUserId },
-        { receiverId: loggedInUserId }
-      ]
-    }).select("senderId receiverId");
+    const user = await User.findById(loggedInUserId).populate("friends", "-password").lean();
+    
+    const friends = user.friends || [];
 
-    // Extract unique user IDs from those messages
-    const chattedUserIds = new Set();
-    messages.forEach((msg) => {
-      if (msg.senderId.toString() !== loggedInUserId.toString()) {
-        chattedUserIds.add(msg.senderId.toString());
-      }
-      if (msg.receiverId.toString() !== loggedInUserId.toString()) {
-        chattedUserIds.add(msg.receiverId.toString());
-      }
-    });
-
-    // Find only the users we have chatted with
-    const users = await User.find({ 
-      _id: { $in: Array.from(chattedUserIds) } 
-    }).select("-password").lean();
-
-    // Fetch unread message counts for each user
+    // Fetch unread message counts for each friend
     const usersWithUnreadCounts = await Promise.all(
-      users.map(async (user) => {
+      friends.map(async (friend) => {
         const unreadCount = await Message.countDocuments({
-          senderId: user._id,
+          senderId: friend._id,
           receiverId: loggedInUserId,
           isRead: { $ne: true },
         });
-        return { ...user, unreadCount };
+        return { ...friend, unreadCount };
       })
     );
 
@@ -107,6 +87,11 @@ export const sendMessage = async (req, res) => {
     const { id: receiverId } = req.params;
     const senderId = req.user._id;
 
+    const sender = await User.findById(senderId);
+    if (!sender.friends.includes(receiverId)) {
+      return res.status(403).json({ error: "You can only send messages to your friends" });
+    }
+
     let imageUrl;
     if (image) {
       // Upload base64 image to cloudinary
@@ -131,6 +116,83 @@ export const sendMessage = async (req, res) => {
     res.status(201).json(newMessage);
   } catch (error) {
     console.log("Error in sendMessage controller: ", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const deleteMessage = async (req, res) => {
+  try {
+    const { id: messageId } = req.params;
+    const myId = req.user._id;
+
+    const message = await Message.findById(messageId);
+    if (!message) {
+      return res.status(404).json({ message: "Message not found" });
+    }
+
+    // Verify sender
+    if (message.senderId.toString() !== myId.toString()) {
+      return res.status(403).json({ message: "Unauthorized to delete this message" });
+    }
+
+    await Message.findByIdAndDelete(messageId);
+
+    // Emit socket event to the receiver
+    const receiverSocketId = getReceiverSocketId(message.receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("messageDeleted", { messageId });
+    }
+
+    res.status(200).json({ message: "Message deleted successfully", messageId });
+  } catch (error) {
+    console.log("Error in deleteMessage controller: ", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const reactToMessage = async (req, res) => {
+  try {
+    const { id: messageId } = req.params;
+    const { emoji } = req.body;
+    const userId = req.user._id;
+
+    if (!emoji) {
+      return res.status(400).json({ message: "Emoji is required" });
+    }
+
+    const message = await Message.findById(messageId);
+    if (!message) {
+      return res.status(404).json({ message: "Message not found" });
+    }
+
+    // Toggle logic: check if this user already reacted with this emoji
+    const existingReactionIndex = message.reactions.findIndex(
+      (r) => r.userId.toString() === userId.toString() && r.emoji === emoji
+    );
+
+    if (existingReactionIndex !== -1) {
+      // Remove reaction if it already exists
+      message.reactions.splice(existingReactionIndex, 1);
+    } else {
+      // Add new reaction
+      message.reactions.push({ emoji, userId });
+    }
+
+    await message.save();
+
+    // Determine who to notify
+    // If I react to my own message, notify the receiver
+    // If I react to the other person's message, notify the sender
+    const notifyUserId = message.senderId.toString() === userId.toString() ? message.receiverId : message.senderId;
+    
+    const notifySocketId = getReceiverSocketId(notifyUserId);
+    if (notifySocketId) {
+      io.to(notifySocketId).emit("messageReaction", { messageId, reactions: message.reactions });
+    }
+
+    res.status(200).json(message);
+  } catch (error) {
+    console.log("Error in reactToMessage controller: ", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };

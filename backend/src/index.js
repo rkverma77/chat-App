@@ -6,6 +6,7 @@ import cors from "cors";
 import { connectDB } from "./lib/db.js";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
+import friendRoutes from "./routes/friend.route.js";
 import { app, server } from "./lib/socket.js";
 
 dotenv.config();
@@ -43,6 +44,7 @@ app.use(
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/friends", friendRoutes);
 
 // Start Server
 server.listen(PORT, () => {

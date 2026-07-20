@@ -1,5 +1,6 @@
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
+import { useFriendStore } from "../store/useFriendStore";
 import Sidebar from "../components/Sidebar";
 import NoChatSelected from "../components/NoChatSelected";
 import ChatContainer from "../components/ChatContainer";
@@ -9,19 +10,24 @@ import { useEffect } from "react";
 
 const HomePage = () => {
   const { selectedUser, subscribeToTyping, unsubscribeFromTyping, subscribeToMessages, unsubscribeFromMessages } = useChatStore();
+  const { subscribeToFriendEvents, unsubscribeFromFriendEvents, getFriends, getPendingRequests } = useFriendStore();
   const { socket } = useAuthStore();
 
   useEffect(() => {
     if (socket) {
       subscribeToTyping();
       subscribeToMessages();
+      subscribeToFriendEvents();
+      getFriends();
+      getPendingRequests();
     }
     
     return () => {
       unsubscribeFromTyping();
       unsubscribeFromMessages();
+      unsubscribeFromFriendEvents();
     };
-  }, [socket, subscribeToTyping, unsubscribeFromTyping, subscribeToMessages, unsubscribeFromMessages]);
+  }, [socket, subscribeToTyping, unsubscribeFromTyping, subscribeToMessages, unsubscribeFromMessages, subscribeToFriendEvents, unsubscribeFromFriendEvents, getFriends, getPendingRequests]);
 
   return (
     <div className="h-screen w-full relative overflow-hidden" style={{ background: "transparent" }}>
